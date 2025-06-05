@@ -1,10 +1,3 @@
-"""
-Alert: ¡Módulo creado con bastante ayuda de ChatGPT, por lo que intenta no modificarlo!
-Function: creando un hilo independiente, donde estará leyendo el serial en paralelo y regresando
-lo que recibe. Desde el tkinter se debe de actualizar cada cierto tiempo una función solamente
-para reflejar lo que recibes de este módulo. A este módulo hace falta un ejemplo de uso, pero es verdaderamente intuitivo.
-"""
-
 import serial
 import serial.tools.list_ports
 from threading import Thread
@@ -19,7 +12,13 @@ def get_ports() -> List[str]:
 
 @Singleton
 class ArduinoConnection:
-    """Esta librería es para conectarse a cualquier tipo de Arduino o ESP32 con protocolo serial"""
+    """
+    Esta librería es para conectarse a cualquier tipo de Arduino o ESP32 con protocolo serial
+    Alert: ¡Módulo creado con bastante ayuda de ChatGPT, por lo que intenta no modificarlo!
+    Function: creando un hilo independiente, donde estará leyendo el serial en paralelo y regresando
+    lo que recibe. Desde el tkinter se debe de actualizar cada cierto tiempo una función solamente
+    para reflejar lo que recibes de este módulo. A este módulo hace falta un ejemplo de uso, pero es verdaderamente intuitivo.
+    """
     running: bool = False
     cola: Queue = Queue()
 

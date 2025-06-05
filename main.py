@@ -24,14 +24,14 @@ class Cubesat(ttk.Window):
         self.icono_16 = ttk.PhotoImage(file=icon, master=self)
         self.iconphoto(False, self.icono_16)
 
-        # FRAME - Pages manager
-        self.frame_pages = MenuFrame(self, sub_color=self.color, show_page_callback=self.show_page)
-        self.frame_pages.grid(row=0, column=0, sticky="nsew")
-
         # FRAME - Contenedor
         self.frame_menu = ShowFrame(self, sub_color="light")
         self.frame_menu.configure(padding=(15, 30, 15, 30))
         self.frame_menu.grid(row=0, column=1, sticky="nsew")
+
+        # FRAME - Pages manager
+        self.frame_pages = MenuFrame(self, sub_color=self.color, show_page_callback=self.show_page)
+        self.frame_pages.grid(row=0, column=0, sticky="nsew")
 
     def show_page(self, page_name):
         self.frame_menu.show_page(page_name)
