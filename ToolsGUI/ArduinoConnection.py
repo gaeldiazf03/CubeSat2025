@@ -1,13 +1,14 @@
-import serial
-import serial.tools.list_ports
-from threading import Thread
+from serial import Serial, SerialException
+from serial.tools.list_ports import comports
+from threading import Thread, Lock
 from queue import Queue, Empty
-from typing import List
+from typing import List, Optional
 from Measurements import Singleton
 
 
 def get_ports() -> List[str]:
-    return [port.device for port in serial.tools.list_ports.comports()]
+    """Lista de puertos seriales disponibles"""
+    return [port.device for port in comports()]
 
 
 @Singleton
@@ -18,112 +19,141 @@ class ArduinoConnection:
     Function: creando un hilo independiente, donde estará leyendo el serial en paralelo y regresando
     lo que recibe. Desde el tkinter se debe de actualizar cada cierto tiempo una función solamente
     para reflejar lo que recibes de este módulo. A este módulo hace falta un ejemplo de uso, pero es verdaderamente intuitivo.
+    Example:
+        arduino = ArduinoConnection()
+        arduino.connect()
+        arduino.start_reading()
+
+        while True:
+            data = arduino.get_reading()
+            if data:
+                print(data)
     """
-    running: bool = False
-    cola: Queue = Queue()
+    VALID_BAUDS     = {9600, 19200, 38400, 57600, 115200}
 
     def __init__(self) -> None:
-        self.vector: serial.Serial = serial.Serial()
-        self.vector.port = ''
-        self.vector.baudrate = 0
-        self.vector.timeout = 0.0
+        self._serial: Serial  = Serial()
+        self._serial.port     = ''
+        self._serial.baudrate = 0
+        self._serial.timeout  = 0.0
+
+        self._running: bool   = False
+        self._cola: Queue     = Queue(maxsize=1000)
+        self._lock: Lock      = Lock()
 
     def connect(self, port: str, baud: int, timeout: float = 5) -> None:
         """Conectar al Serial seleccionado"""
-        self.vector.port = port
-        self.vector.baudrate = baud
-        self.vector.timeout = timeout
 
-        try:
-            self.vector.open()
-            self.running = True
-            print(f"""
-            ============================
-            |   Port: {port}           |          
-            |   Baudrate: {baud}       |
-            ============================
-            """)
-        except Exception as e:
-            raise Exception(e)
+        if baud not in self.VALID_BAUDS:
+            raise ValueError(f"Invalid baudrate. Must be one of {self.VALID_BAUDS}")
+
+        with self._lock:
+            self._serial.port     = port
+            self._serial.baudrate = baud
+            self._serial.timeout  = timeout
+
+            try:
+                self._serial.open()
+                self._running = True
+                print(f"""
+                ============================
+                |   Port: {port}           |          
+                |   Baudrate: {baud}       |
+                ============================
+                """)
+            except SerialException as e:
+                raise ConnectionError(f"Fallo al conectar al puerto {port}: {e}")
 
     def disconnect(self) -> None:
         """Desconectar del Serial"""
-        if self.vector.is_open:
-            self.running = False
-            self.vector.close()
-            self.vector.__del__()
+        if not self._running:
+            print("""
+            ============================
+            |   Arduino never found (R)|
+            ============================
+            """)
+            return
+
+        if not self._serial.is_open:
+            print("""
+            ============================
+            |   Arduino never found (S)|
+            ============================
+            """)
+            return
+
+        with (self._lock):
+            self._running = False
+            self._serial.close()
             print("""
             ============================
             |   Arduino disconnected!  |
             ============================
             """)
-        else:
-            print("""
-            ============================
-            |   Never found Arduino!   |
-            ============================
-            """)
 
     def reading(self) -> None:
-        """La lectura del serial se separa en paralelo y se almacena en una cola"""
-        while self.running:
+        """La lectura del serial se separa en paralelo y se almacena en una _cola"""
+        while self._running:
             try:
-                data = str(self.vector.readline().strip().decode('utf-8'))
-                self.cola.put(data)
-            except serial.SerialException as e:
-                print(f'Error al abrir puerto. {e}')
+                if data := self._serial.readline().decode('utf-8').strip():
+                    with self._lock:
+                        self._cola.put(data)
+            except (SerialException, AttributeError) as e:
+                with self._lock:
+                    self._running = False
                 print(f"""
                 ============================
                 |   Error en el puerto     |
                 ============================
-                """)
-                self.running = False
-            except AttributeError:
-                pass
-            except Exception as e:
-                print(f"""
-                ============================
-                |   Error:\n               |
-                |         {e}              |
-                ============================
+                {e}
                 """)
 
     def start_reading(self) -> None:
         """Inicia en paralelo"""
+        if not self._running:
+            raise RuntimeError("""
+            ============================
+            |   Sin conectarse.        |
+            |   Llama a connect().     |
+            ============================
+            """)
         Thread(target=self.reading, daemon=True).start()
 
-    def get_reading(self):
+    def get_reading(self) -> Optional[str]:
         """Regresa la lectura del serial en paralelo"""
-        try:
-            return self.cola.get_nowait()
-        except Empty:
-            return None
+        with self._lock:
+            try:
+                return self._cola.get_nowait()
+            except Empty:
+                return None
 
     def send_data(self, data: str) -> None:
         """Mandar datos al serial en paralelo"""
-        data = data + "\r\n"
-        if self.vector.is_open:
+        if not self._running:
+            raise RuntimeError(f"""
+            ============================
+            |   Sin conectarse.        |
+            |   Llama a connect().     |
+            ============================
+            """)
+
+        with self._lock:
             try:
-                self.vector.write(data.encode('utf-8'))
-            except serial.SerialException as e:
+                self._serial.write(f"{data}\r\n".encode('utf-8'))
+            except SerialException as e:
                 print(f"""
                 ============================
                 | Error mandando los datos |
-                | {e}                      |
                 ============================
-                """)
-            except Exception as e:
-                print(f"""
-                ============================
-                |   Error inesperado       |
-                |   {e}                    |
-                ============================
+                {e}
                 """)
 
     def check_connection(self) -> bool:
         """Confirma que está disponible la conexión"""
-        return self.vector.is_open
+        return self._serial.is_open
 
-    def reset_connection(self):
-        """Nos ayuda a limpiar el serial conectado"""
-        self.vector.reset_input_buffer()
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.disconnect()

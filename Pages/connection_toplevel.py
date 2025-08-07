@@ -32,12 +32,9 @@ class Com(TopLevelFrame):
         self.port_var.set('')
 
         # Botones
-        self.disconnect_button = ttk.Button(self, text="Desconectar", command=self.disconnect_port, width=12,
-                                            style="CustomWarning.TButton")
-        self.connect_button = ttk.Button(self, text="Conectar", command=self.connect_port, width=12,
-                                         style="CustomSuccess.TButton")
-        self.close_button = ttk.Button(self, text="Cerrar", command=self.destroy, width=12,
-                                       style="CustomDanger.TButton")
+        self.disconnect_button = ttk.Button(self, text="Desconectar", command=self.disconnect_port, width=12, style="CustomWarning.TButton")
+        self.connect_button = ttk.Button(self, text="Conectar", command=self.connect_port, width=12, style="CustomSuccess.TButton")
+        self.close_button = ttk.Button(self, text="Cerrar", command=self.destroy, width=12, style="CustomDanger.TButton")
 
         self.disconnect_button.grid(row=1, column=0)
         self.connect_button.grid(row=1, column=1)
@@ -61,20 +58,17 @@ class Com(TopLevelFrame):
         if current_ports != self.last_ports:
             self.last_ports = current_ports
 
-            # Destruye el menú anterior completamente
             if self.menu:
                 self.menu.destroy()
             self.menu = ttk.Menu(self.mb)
 
             if not current_ports:
                 self.mb.configure(state='disabled', text='No hay puertos disponibles')
-                self.port_var.set('')  # Limpia selección
+                self.port_var.set('')
             else:
-                self.mb.configure(state='normal',
-                                  text='Seleccionar puerto' if not self.port_var.get() else f"Puerto: {self.port_var.get()}")
+                self.mb.configure(state='normal', text='Seleccionar puerto' if not self.port_var.get() else f"Puerto: {self.port_var.get()}")
                 for port in current_ports:
-                    self.menu.add_radiobutton(label=port, variable=self.port_var,
-                                              command=lambda p=port: self.port_selected(p))
+                    self.menu.add_radiobutton(label=port, variable=self.port_var, command=lambda p=port: self.port_selected(p))
             self.mb['menu'] = self.menu
 
     def on_close(self):
@@ -123,25 +117,3 @@ class Com(TopLevelFrame):
             print(f"Error al desconectar: {e}")
             self._message = 0b01000000  # MSG_DISCONNECT_ERROR
         show_message(self, self._message)
-
-
-class App(ttk.Window):
-    def __init__(self):
-        super().__init__()
-        self.title('Connection Manager')
-        self.geometry('500x500')
-        self.resizable(False, False)
-        self.iconphoto(False, ttk.PhotoImage(file='D:\\PycharmProjects\\RoverGUI\\PagesManager\\img\\Delfin16.png'))
-
-        self.com_window = None
-
-        ttk.Button(self, text="Abrir ventana COM", command=self.open_com).pack(pady=20)
-
-    def open_com(self):
-        if self.com_window is None or not self.com_window.winfo_exists():
-            self.com_window = Com(self)
-
-
-if __name__ == '__main__':
-    app = App()
-    app.mainloop()
