@@ -8,6 +8,7 @@ from Plantillas import BaseFrame
 class MenuFrame(BaseFrame):
     def __init__(self, master, sub_color, show_page_callback=print, **kwargs):
         super().__init__(master, style=sub_color, **kwargs)
+        # pyrefly: ignore  # no-matching-overload
         self.configure(width=200, height=500, bootstyle=sub_color)
 
         self.show_page_callback = show_page_callback
@@ -17,6 +18,7 @@ class MenuFrame(BaseFrame):
         self.kotwResize = self.kotwImage.resize((175, 175))
         self.kotwReady = ImageTk.PhotoImage(image=self.kotwResize, master=self)
 
+        # pyrefly: ignore  # unexpected-keyword
         self.kotwLabel = ttk.Label(self, image=self.kotwReady, bootstyle="inverse-"+sub_color)
         self.kotwLabel.place(relx=0.5, y=120, anchor="center")
         self.kotwLabel.bind("<Button-1>", lambda event: self.show_page_callback("HomePage"))
@@ -35,6 +37,7 @@ class MenuFrame(BaseFrame):
 
     def open_com(self):
         if self.com_window is None or not self.com_window.winfo_exists():
+            # pyrefly: ignore  # bad-assignment
             self.com_window = Com(self)
 
 

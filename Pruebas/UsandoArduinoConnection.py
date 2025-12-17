@@ -14,7 +14,9 @@ class SerialMonitorApp:
         self.write_text = tk.Entry()
         self.write_text.grid(column=0, row=1, padx=10, pady=10)
 
+        # pyrefly: ignore  # bad-assignment
         self.send_text = tk.Button(text="Send", command=self.send_text)
+        # pyrefly: ignore  # missing-attribute
         self.send_text.grid(column=1, row=1, padx=10, pady=10)
 
         self.conn = ArduinoConnection()

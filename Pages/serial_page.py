@@ -9,9 +9,11 @@ class SerialPage(BaseFrame):
         super().__init__(master)
         self.sub_color = sub_color
 
+        # pyrefly: ignore  # bad-argument-type, unexpected-keyword
         self.lbl_title = ttk.Label(self, text="Serial Page", font=self.TITLE, bootstyle="inverse-"+self.sub_color)
         self.lbl_title.grid(column=0, row=0, sticky="ew")
 
+        # pyrefly: ignore  # unexpected-keyword
         self.serial_lblframe = ttk.Labelframe(self, text='Serial', bootstyle="info", labelanchor="nw")
         self.serial_lblframe.grid(column=0, row=1, columnspan=3, sticky="nsew", padx=10, pady=10)
 

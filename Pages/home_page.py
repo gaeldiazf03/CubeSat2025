@@ -15,6 +15,7 @@ class HomePage(BaseFrame):
         for i in range(5):
             self.rowconfigure(i, weight=1)
 
+        # pyrefly: ignore  # bad-argument-type, unexpected-keyword
         self.lbl_titulo = ttk.Label(self, text='Delphinus Cubesat', font=self.TITLE, bootstyle="inverse-"+self.sub_color)
         self.lbl_titulo.grid(column=0, row=0, columnspan=3)
 
@@ -22,6 +23,7 @@ class HomePage(BaseFrame):
         self.cansatResize = self.iconoCansat.resize((350, 350))
         self.cansatReady = ImageTk.PhotoImage(image=self.cansatResize, master=self)
 
+        # pyrefly: ignore  # unexpected-keyword
         self.cansatLabel = ttk.Label(self, image=self.cansatReady, bootstyle='inverse-'+self.sub_color)
         self.cansatLabel.grid(column=1, row=1, rowspan=3)
 

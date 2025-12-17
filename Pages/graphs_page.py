@@ -12,6 +12,7 @@ class GraphsPage(ttk.Frame):
 if __name__ == '__main__':
     app = ttk.Window(themename="journal")
 
+    # pyrefly: ignore  # missing-argument
     gp = GraphsPage(master=app)
     gp.pack()
 

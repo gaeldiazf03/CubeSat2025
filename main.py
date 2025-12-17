@@ -11,7 +11,7 @@ class Cubesat(ttk.Window):
     sabiendo que va a fallar allá y no acá. Muy pocas veces he necesitado editar aquí
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self.color: str = sub_color
 
@@ -39,5 +39,5 @@ class Cubesat(ttk.Window):
 
 if __name__ == "__main__":
     ttk.utility.enable_high_dpi_awareness()
-    app = Cubesat(**config)
+    app: Cubesat = Cubesat(**config)
     app.mainloop()

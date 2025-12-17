@@ -17,21 +17,33 @@ class TopLevelFrame(ttk.Toplevel):
 
     def _setup_base_styles(self):
         # Botones
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_buttons("CustomSuccess.TButton", self.colors.success)
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_buttons("CustomDanger.TButton", self.colors.danger)
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_buttons("CustomWarning.TButton", self.colors.warning)
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_buttons("CustomInfo.TButton", self.colors.info)
 
         # Labels
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_label("CustomSuccess.TLabel", self.colors.success, self.FONT)
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_label("CustomDanger.TLabel", self.colors.danger, self.FONT)
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_label("CustomWarning.TLabel", self.colors.warning, self.FONT)
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_label("CustomInfo.TLabel", self.colors.info, self.FONT)
 
         # Títulos
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_label("CustomSuccessTitle.TLabel", self.colors.success, self.TITLE)
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_label("CustomDangerTitle.TLabel", self.colors.danger, self.TITLE)
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_label("CustomWarningTitle.TLabel", self.colors.warning, self.TITLE)
+        # pyrefly: ignore  # missing-attribute
         self.create_custom_style_label("CustomInfoTitle.TLabel", self.colors.info, self.TITLE)
 
     def create_custom_style_buttons(self, custom_style: str, color_string):

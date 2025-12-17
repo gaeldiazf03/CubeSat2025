@@ -49,6 +49,7 @@ class Com(TopLevelFrame):
     def _start_auto_update(self):
         """Maneja cíclicamente el auto update para actualizar los puertos"""
         self.update_ports()
+        # pyrefly: ignore  # bad-assignment, bad-argument-type
         self.port_update_id = self.after(3000, self._start_auto_update)
 
     def update_ports(self):
@@ -60,6 +61,7 @@ class Com(TopLevelFrame):
 
             if self.menu:
                 self.menu.destroy()
+            # pyrefly: ignore  # bad-assignment
             self.menu = ttk.Menu(self.mb)
 
             if not current_ports:
@@ -68,6 +70,7 @@ class Com(TopLevelFrame):
             else:
                 self.mb.configure(state='normal', text='Seleccionar puerto' if not self.port_var.get() else f"Puerto: {self.port_var.get()}")
                 for port in current_ports:
+                    # pyrefly: ignore  # missing-attribute
                     self.menu.add_radiobutton(label=port, variable=self.port_var, command=lambda p=port: self.port_selected(p))
             self.mb['menu'] = self.menu
 

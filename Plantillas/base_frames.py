@@ -6,6 +6,7 @@ class BaseFrame(ttk.Frame):
     def __init__(self, master, button_color="primary", **kwargs):
         super().__init__(master, **kwargs)
 
+        # pyrefly: ignore  # no-matching-overload
         self.configure(bootstyle="light")
 
         self.style = ttk.Style()

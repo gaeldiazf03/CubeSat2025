@@ -23,6 +23,7 @@ class ExcelPage(ttk.Frame):
 if __name__ == "__main__":
     app = ttk.Window()
 
+    # pyrefly: ignore  # missing-argument
     serial_page = ExcelPage(app)
     serial_page.pack()
 
